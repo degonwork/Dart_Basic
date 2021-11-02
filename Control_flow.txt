@@ -1,0 +1,28 @@
+1. Câu lệnh điều kiện if and else
+Điều kiện bên trong biểu thức if và elif bắt buộc phải trả về giá trị boolean 
+
+2. Vòng lặp for loops
+Thực hiện lặp lại một tác vụ nào đó nhiều lần
++ Vòng lặp for... in thực hiện lặp lại các phần tử trong một list hoặc set
+
+3. Vòng lặp while và do-while
++ Vòng lặp while sẽ chạy vô tận khi điều kiện trong nó luôn đúng
++ Vòng lặp do-while sẽ chạy trước một lần trước khi kiểm tra điều kiện của nó
++ Điểm chú ý không để cho vòng lặp chạy vô hạn
+
+4. Break and continue
++ Lệnh break sử dụng để dừng vòng lặp tại lần chạy lệnh
++ Lệnh continue sử dụng để bỏ qua lần lặp hiện tại
+
+5. Switch and case
++ Thực hiện việc so sánh giá trị trong switch với từng case theo phép toán ==, đối tượng so sánh bắt buộc phải là một đối tượng
++ Mỗi case bắt buộc phải kết thúc bằng từ khóa break
++ Sau case cuối cùng là biểu thức default
++ Câu lệnh continue thực hiện để nhảy đến phần kiểm tra bất kỳ (chú ý không để cho chương trình chạy vô hạn lần)
+
+6. Assert
+Thực hiện làm gián đoạn lần thực thi bình thường của chương trình khi điều kiện sai
++ Đối số đầu tiên là điều kiện cần kiểm tra 
++ Đối số thứ hai là một lời nhắn xác nhận
++ Để kích hoạt lệnh assert thực hiện chạy chương trình dart bằng lệnh dart--enable-asserts file.txt
+

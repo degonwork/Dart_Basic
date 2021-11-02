@@ -1,0 +1,32 @@
+1. Chương trình cơ bản dart đầu tiên
+
+void printInterger(int aNumber) {
+  print('The Number is $aNumber'); //Hiển thị thông tin
+}
+
+//Đây là nơi chương trình chạy
+void main() {
+  var number = 42; //Khai báo và khởi tạo một biến
+  printInterger(number); //Gọi hàm trên
+}
+
+Các thành phần cơ bản
++ // Đây là phần comment (một dòng hoặc nhiều dòng)
++ void là kiểu đặc biệt chỉ ra hàm này sẽ không trả về giá trị rõ ràng
++ int Chỉ ra một giá trị số nguyên
++ 42 là giá trị theo nghĩa đen
++ print là hàm để hiển thị dữ liệu
++ '...', "..." là giá trị chuỗi
++ $variableName (or ${expression}) là cú pháp hiển thị thông tin cho chuỗi
++ main() là kiểu hàm đặc biệt nơi chương trình được chạy
++ var là cách khai báo biến mà không cần xác định kiểu
+
+2. Các khái niệm quan trọng
+
++ Những thứ đặt trong một biến là một đối tượng, mọi đối tượng là sự thể hiện của một lớp, mỗi số, hàm, null là một đối tượng.
+Tất cả đối tượng được thừa kế bởi Object class
++ Có thể đặt một biến thành null bằng cách đặt dấu ? ở sau kiểu khai báo của nó ví dụ "int?"
++ Có cách khai báo kiểu chung như là List<int>(list của số nguyên) hoặc List<Object> (list của đối tượng của các kiểu)
++ Có thể tạo các hàm bên trong các hàm khác (Hàm lồng nhau)
++ Các biến có thể được gọi là trường hoặc thuộc tín
++ Có hai vấn đề đối với công cụ của dart warning và errors, warning không ngăn chương trình thực thi, error sẽ ngăn không cho dòng code thực thi

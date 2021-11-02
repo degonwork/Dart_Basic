@@ -1,0 +1,198 @@
+1. Overview
+- Function là một object và có loại định nghĩa kiểu
+- Function có thể gán cho một biến hoặc sử dụng làm tham số cho các hàm khác, có thể gọi một thể hiện của lớp Dart nếu chúng là một hàm
+Example: declare a function:
+bool isNumber(int height) {
+	return height is int;
+}
+- Function vẫn làm việc bình thường khi chúng ta không khai báo kiểu cho nó
+isNumber(height) {
+	return height is int;
+}
+- Khi hàm chỉ chứa một biểu thức duy nhất ta sử dụng cú pháp shorthand 
+bool isNumber(int height) => height is int;
+Cú pháp => expr thay thế mặc định cho câu lệnh { return expr; }, chú ý chỉ có câu lệnh mới có thể nằm giữa '=>' và ';'
+
+2. Parameters
+- Một function có hai tham số cơ bản
++ Tham số bắt buộc theo thứ tự
++ Tham số tùy chọn
+Tham số bắt buộc phải được khai báo vị trí trước vị trí của tham số tùy chọn
+
+- Tham số bắt buộc theo thứ tự
+Là tham số bắt buộc phải sử dụng khi gọi hàm, chúng được đặt giá trị theo thứ tự khi gọi hàm
+Tham số bắt buộc không cần phải có giá trị mặc định khi khai báo
+Vd: declare function with required parameters
+String requiredParameters (String name) {
+	return name; //name is required parameter!!
+}
+
+- Tham số tùy chọn (tham số đặt tên và tham số vị trí, chỉ sử dụng một trong hai) 
++ Một số API - đặc biệt là các hàm tạo tiện ích con Flutter chỉ sử dụng tham số đặt tên
+
++ Named parameters 
+VD: Khai báo một hàm có tham số đặt tên
+void namedParameters({bool? bold, int? age}) {
+	print(bold, age);
+}
+Các tham số đặt tên trong khi khai báo nếu ta không đặt giá trị mặc định thì bắt buộc phải có kiểu null
+Khi ta gọi hàm ta phải đặt giá trị cho nó
+namedParameters(bold : true, age : 16);
+
+Các tham số đặt tên là tùy chọn, nhưng ta có thể thêm từ khóa required để chỉ định chúng là bắt buộc
+Vd:
+int number({String? name, required int age}) {
+	print(age);
+}
+number(age : 18); //required variable age
+
++ Optional position parameters
+VD: Khai báo một hàm có tham số theo vị trí
+String email([String? name, String? dot]) {
+	return '$name@gmail$dot';
+}
+Khi gọi hàm ta cần phải đặt giá trị theo đúng thứ tự của tham số khi được khai báo
+email('dtlong.work', 'com');
+
++ Đặt giá trị mặc định cho tham số tùy chọn
+Sử dụng dấu = để đặt giá trị mặc định cho các tham số, nếu không đặt các giá trị mặc định cho các tham số tùy chọn thì chúng phải có giá trị là null
+VD: 
+void say(String name, [int age = 24]) {
+	print('$name is $age year old');
+}
+
+say(Long, 25);
+Khi ta gọi hàm mà thay đổi tham số mặc định thì giá trị tham số bị biến đổi theo
+
+3. Hàm main()
+Là hàm cấp cao nhất đóng vai trò là hàm biên dịch cho chương trình, Hàm main trả về kiểu dữ liệu void và có một tham số List<String> tùy chọn
+
+Chạy chương trình trên terminal với câu lệnh dart file.dart Long Hoan
+main(List<String> arguments){
+     //printing the arguments along with length
+     print(arguments.length); //2
+     print(arguments); //[Long, Hoan]
+}
+Tham số arguments có kiểu list
+
+4. Tính chất của function
+Các function có thể được đặt làm tham số cho các hàm khác 
+VD: 
+void say(String name) {
+	print(name);
+}
+
+void persion(function) {
+	function('Long');
+}
+
+void main() {
+	persion(say);
+}
+
+Hàm có thể được gán vào một biến lúc này tên hàm sẽ không được khai báo
+var function = (String name) {
+	return name;
+};
+
+5. Anonymous function (hàm ẩn danh)
+Các hàm ẩn danh là hàm không cần đặt tên được gọi là các hàm ẩn danh hoặc hàm lambda hoặc hàm closure, ta có thể gán hàm này vào một biến
+VD: 
+void main() {
+	persion((String name) {
+	print(name)});
+}
+Nếu hàm chỉ có một biểu thức ta sử dụng cú pháp shorthand 
+void main() {
+	persion((String name) => print(name)); use one ';'
+}
+
+6. Lexical scope
+Phạm vi sử dụng biến được xác định bằng cách bố trí đoạn mã
+VD: 
+bool topLevel = true;
+void main() {
+  var insideMain = true;
+  void myFunction() {
+    var insideFunction = true;
+    void nestedFunction() {
+      var insideNestedFunction = true;
+      assert(topLevel);
+      assert(insideMain);
+      assert(insideFunction);
+      assert(insideNestedFunction);
+    }
+  }
+}
+Biến topLevel là biến local có thể  được sử dụng ở mọi nơi
+Biến insideMain chỉ được sử dụng trong phạm vi hàm main
+Biến insideFunction chỉ được sử dụng bên trong hàm myFunction
+Biến insideNestedFunction chỉ được sử dụng trong hàm nestedFunction
+
+7. Đóng gói 
+Là một đối tượng hàm mà ta có thể truy xuất vào biến trong phạm vi sử dụng của biến (biến là tham số của một hàm) ngay cả khi hàm được sử dụng bên ngoài phạm vi ban đầu của nó
+Function makeAdder(int addBy) {
+  return (int i) => addBy + i;
+}
+
+void main() {
+  // Create a function that adds 2.
+  var add2 = makeAdder(2);
+
+  // Create a function that adds 4.
+  var add4 = makeAdder(4);
+
+  assert(add2(3) == 5);
+  assert(add4(3) == 7);
+}
+
+Hàm makeAdder sẽ đóng gói biến addby, khi hàm này được gọi nó sẽ nhớ biến addBy
+
+8. Testing functions for equality //after learning
+void foo() {} // A top-level function
+
+class A {
+  static void bar() {} // A static method
+  void baz() {} // An instance method
+}
+
+void main() {
+  var x;
+
+  // Comparing top-level functions.
+  x = foo;
+  assert(foo == x);
+
+  // Comparing static methods.
+  x = A.bar;
+  assert(A.bar == x);
+
+  // Comparing instance methods.
+  var v = A(); // Instance #1 of A
+  var w = A(); // Instance #2 of A
+  var y = w;
+  x = w.baz;
+
+  // These closures refer to the same instance (#2),
+  // so they're equal.
+  assert(y.baz == x);
+
+  // These closures refer to different instances,
+  // so they're unequal.
+  assert(v.baz != w.baz);
+}
+
+9. Hàm trả về giá trị
+Tất cả các hàm đều trả về một giá trị. Nếu không trả về giá trị nào, thì mặc định sẽ trả về null được sử dụng ngầm trong đoạn mã
+Lúc này ta không định nghĩa kiểu cho hàm
+push(int a) {
+	a += 1;
+	//return a;
+}
+var result = push(1);
+print(result); //null
+
+
+
+
+

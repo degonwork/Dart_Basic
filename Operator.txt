@@ -1,0 +1,49 @@
+Các toán tử trong dart
+Độ ưu tiên toán tử được xếp theo thứ tự từ trên xuống dưới theo bảng trong tài liệu docs
+1. Các toán tử toán học
+Thể hiện theo bảng trong tài liệu docs (~/ chia lấy nguyên, % chia lấy dư)
++ Tiền tố ++var, --var
+Sẽ trả về giá trị sau khi thực thi, giá trị của biên cũng biến đổi theo toán tử 
++ Hậu tố --var, var--
+Sẽ trả về giá trị trước khi thực thi, giá trị của biên cũng biến đổi theo toán tử 
+2. Các toán tử so sánh
+Thể hiện theo bảng trong tài liệu docs
+Thực hiện so sánh như toán học, kết quả trả về sẽ là boolean
+
+3. Toán tử kiểm tra kiểu
+Thể hiện theo bảng trong tài liệu docs
++ Toán tử as sẽ so sánh dữ liệu với kiểu kết quả trả về của phép so sánh là chính nó nếu điều kiện đúng, nếu điều kiện sai sẽ trả về lỗi chương trình chạy
++ Kết quả của toán tử is và is! sẽ trả về kết quả là boolean khi ta so sánh biến với một kiểu dữ liệu
+
+4. Toán tử gán
+Thể hiện theo bảng trong tài liệu docs
++ Toán tử gán có phép tính (+=, -=, /= ...) hoạt động như sau
+var a += b; //a = a + b
++ Toán tử gán ??= thì nếu biến là null thì giá trị sẽ được gán cho biến, ngược lại (không null) thì biến giữ nguyên giá trị
+
+5. Toán tử logic
+Thể hiện theo bảng trong tài liệu docs
++ Toán tử ! để đảo ngược giá trị của boolean
++ Toán tử || trả về kết quả boolean và ta chỉ xét một trong hai điều kiện 
++ Toán tử & trả về kết quả boolean và ta chỉ xét cả hai điều kiện 
+
+6. Toán tử Bitwise and shilf
++ Toán tử and (&) phụ thuộc vào 2 giá trị đầu vào, đầu ra là 1 khi cả hai giá trị đầu vào là 1, các trường hợp còn lại là 0
++ Toán tử or (\) phụ thuộc vào 2 giá trị đầu vào, đầu ra là 1 khi một trong hai giá trị đầu vào, là 1 các trường hợp còn lại là 0
++ Toán tử xor (^) phụ thuộc vào 2 giá trị đầu vào đầu ra là 1 khi các đầu vào không giống nhau, các trường hợp còn lại là 0
++ Toán tử ~expr Chuyển đổi 0 thành 1 (1 thành 0)
++ Toán tử << value dịch sang trái 'value' bit
++ Toán tử >> value dịch sang phải 'value' bit
+
+7. Toán tử câu lệnh điều kiện
++ condition ? expr1 : expr2
+Khi condition là đúng sẽ là giá trị của expr1, nếu sai sẽ là giá trị của expr2
++ expr1 ?? expr2
+Khi expr1 là null sẽ là giá trị của expr2, nếu không sẽ là giá trị của expr1
+
+8. Toán tử cascade (note sau)
+
+9. Các toán tử khác 
+Thể hiện theo bảng trong tài liệu docs
+
+

@@ -1,0 +1,726 @@
+1.asynchronous programing: futures, async, await
+Các hoạt động không đồng bộ đưa chưowng trình hoàn thành công việc trong khi chờ một hoạt động khác kết thúc. Các hoạt động không đồng bộ bao gồm: 
++ Tìm nạp dữ liệu qua mạng
++ Ghi vào cơ sở dữ liệu
++ Đọc dữ liệu từ một tệp
+
+Để thực hiện các hoạt động không đồng bộ ta sử dụng Future class và async và await keywords
+
+Ví dụ một hoạt động thực thi không thành công
+
+// This example shows how *not* to write asynchronous Dart code.
+
+String createOrderMessage() {
+  var order = fetchUserOrder();
+  return 'Your order is: $order';
+}
+
+Future<String> fetchUserOrder() =>
+    // Imagine that this function is more complex and slow.
+    Future.delayed(
+      const Duration(seconds: 2),
+      () => 'Large Latte',
+    );
+
+void main() {
+  print(createOrderMessage());
+}
+
+a. What is a future?
+Một future là một thể hiện của Future class, nó là kết quả của một hoạt động bất đồng bộ, có hai trạng thái: uncompleted và complete
+
++ Uncompleted
+Khi bạn gọi một hàm không đồng bộ, nó sẽ trả về một tương lai chưa hoàn thành. Tương lai đó đang chờ hoạt động không đồng bộ của hàm kết thúc hoặc gặp lỗi. 
+
++ Completed
+Nếu hoạt động không đồng bộ thành công, tương lai sẽ trả về một giá trị. Nếu không, nó trả về một lỗi. 
+
++ Trả về một giá trị
+Một future kiểu Future<T> sẽ cung cấp giá trị kiểu T, nếu một future không cung cấp một giá trị thì kiểu của future được cung cấp là Future<void>
+
++ Completing with an error
+Nếu một hoạt động bất đồng bộ xảy ra một lỗi nào đó thì một future sẽ cung cấp một lỗi
+
++ Ví dụ:  Introducing futures
+
+Future<void> fetchUserOrder() {
+  // Imagine that this function is fetching user info from another service or database.
+  return Future.delayed(const Duration(seconds: 2), () => print('Large Latte'));
+}
+
+void main() {
+  fetchUserOrder();
+  print('Fetching user order...');
+}
+
++ Ví dụ: Completing with an error
+
+Future<void> fetchUserOrder() {
+// Imagine that this function is fetching user info but encounters a bug
+  return Future.delayed(const Duration(seconds: 2),
+      () => throw Exception('Logout failed: user ID is invalid'));
+}
+
+void main() {
+  fetchUserOrder();
+  print('Fetching user order...');
+}
+
+b. Working with futures: async and await
+
+Các từ khóa async và await cung cấp một cách khai báo để xác định các hàm không đồng bộ và sử dụng kết quả của chúng
+
+Hai nguyên tắc cơ bản để sử dụng async và await
++ Khai báo một hàm async và thêm async trước thân hàm
++ Từ khóa await làm việc chỉ trong hàm async
+
+Thêm async trước thân hàm
+void main() async { ··· }
+
+Khai báo thêm kiểu trả về nếu hàm không trả về một giá trị nào thì nó có kiểu Future<void>
+Future<void> main() async { ··· }
+
+Sử dụng await trong thân hàm
+print(await createOrderMessage());
+
+Ví dụ về mã đồng bộ
+String createOrderMessage() {
+  var order = fetchUserOrder();
+  return 'Your order is: $order';
+}
+
+Future<String> fetchUserOrder() =>
+    // Imagine that this function is
+    // more complex and slow.
+    Future.delayed(
+      const Duration(seconds: 2),
+      () => 'Large Latte',
+    );
+
+void main() {
+  print('Fetching user order...');
+  print(createOrderMessage());
+}
+
+Ví dụ về mã đồng bộ
+
+Future<String> createOrderMessage() async {
+  var order = await fetchUserOrder();
+  return 'Your order is: $order';
+}
+
+Future<String> fetchUserOrder() =>
+    // Imagine that this function is
+    // more complex and slow.
+    Future.delayed(
+      const Duration(seconds: 2),
+      () => 'Large Latte',
+    );
+
+Future<void> main() async {
+  print('Fetching user order...');
+  print(await createOrderMessage());
+}
+
+c. Execution flow with async and await
+Một hàm async sẽ chạy đồng bộ đến khi gặp từ khóa await đầu tiên, tức là tất cả các câu lệnh đồng bộ trước khi gặp câu lệnh có từ khóa await đầu tiên sẽ thực thi ngay lập tức
+
+ví dụ:
+
+Future<void> printOrderMessage() async {
+  print('Awaiting user order...');
+  var order = await fetchUserOrder();
+  print('Your order is: $order');
+}
+
+Future<String> fetchUserOrder() {
+  // Imagine that this function is more complex and slow.
+  return Future.delayed(const Duration(seconds: 4), () => 'Large Latte');
+}
+
+Future<void> main() async {
+  countSeconds(4);
+  await printOrderMessage();
+}
+
+// You can ignore this function - it's here to visualize delay time in this example.
+void countSeconds(int s) {
+  for (var i = 1; i <= s; i++) {
+    Future.delayed(Duration(seconds: i), () => print(i));
+  }
+}
+
+d. Handling errors
+Để xử lý các lỗi ta sử dụng try-catch, ở trong một hàm async bạn có thể viết các mệnh đề try-catch giống như là các code đồng bộ
+
+Ví dụ 
+Future<void> printOrderMessage() async {
+  try {
+    print('Awaiting user order...');
+    var order = await fetchUserOrder();
+    print(order);
+  } catch (err) {
+    print('Caught error: $err');
+  }
+}
+
+Future<String> fetchUserOrder() {
+  // Imagine that this function is more complex.
+  var str = Future.delayed(
+      const Duration(seconds: 4),
+      () => throw 'Cannot locate user order');
+  return str;
+}
+
+Future<void> main() async {
+  await printOrderMessage();
+}
+
+2. Futures and error handling
+Ngôn ngữ Dart có hỗ trợ không đồng bộ, làm cho mã Dart không đồng bộ dễ đọc và viết hơn nhiều
+a. The Future API and callbacks
+Các hàm sử dụng Future API callbacks sẽ xử lý các giá trị hoặc lỗi sẽ được hoàn thành trong tương lai
+
+Ví dụ:
+myFunc().then(processValue).catchError(handleError);
+
+Các hàm callback dựa trên các nguyên tắc sau: 
++ Lệnh gọi lại của then () sẽ kích hoạt nếu nó được gọi trong Tương lai hoàn thành với một giá trị 
++ Lệnh gọi lại của catchError () sẽ kích hoạt nếu nó được gọi trong Tương lai hoàn thành với lỗi. 
+
+b. Examples of using then() with catchError()
++ catchError() as a comprehensive error handler
+
+ví dụ:
+myFunc().then((value) {
+  doSomethingWith(value);
+  ...
+  throw Exception('Some arbitrary error');
+}).catchError(handleError);
+
++ Error handling within then()
+Để xử lý lỗi chi tiết hơn bạn có thể đăng ký một lệnh callback thứ hai (onError) trong then () để xử lý các Hợp đồng tương lai đã hoàn thành với lỗi  
+Chỉ đăng ký lệnh callback onError tùy chọn nếu bạn muốn phân biệt giữa lỗi được chuyển tiếp tới then () và lỗi được tạo trong then () 
+
+Ví dụ:
+
+funcThatThrows().then(successCallback, onError: (e) {
+  handleError(e); // Original error.
+  anotherFuncThatThrows(); // Oops, new error.
+}).catchError(handleError); // Error from within then() handled.
+
++ Errors in the middle of a long chain
+Có thể có một chuỗi các lệnh gọi then và bắt lỗi được tạo ra từ bất kì phần nào của chuỗi bằng cách sử dụng catchError()
+
+Ví dụ:
+Future<String> one() => Future.value('from one');
+Future<String> two() => Future.error('error from two');
+Future<String> three() => Future.value('from three');
+Future<String> four() => Future.value('from four');
+
+void main() {
+  one() // Future completes with "from one".
+      .then((_) => two()) // Future completes with two()'s error.
+      .then((_) => three()) // Future completes with two()'s error.
+      .then((_) => four()) // Future completes with two()'s error.
+      .then((value) => value.length) // Future completes with two()'s error.
+      .catchError((e) {
+    print('Got error: $e'); // Finally, callback fires.
+    return 42; // Future completes with 42.
+  }).then((value) {
+    print('The value is $value');
+  });
+}
+
+Kết quả trả về của callback then phía trước sẽ là tham số của callback then phía sau
+
++ Handling specific errors
+Nếu muốn bắt một lỗi đặc biệt hoặc nhiều hơn một lỗi, catchError () nhận một đối số có tên tùy chọn, test sẽ đưa ra loại lỗi được tạo ra
+
+Ví dụ:
+void main() {
+  handleAuthResponse(const {'username': 'dash', 'age': 3})
+      .then((_) => ...)
+      .catchError(handleFormatException, test: (e) => e is FormatException)
+      .catchError(handleAuthorizationException,
+          test: (e) => e is AuthorizationException);
+}
+
+c. Async try-catch-finally using whenComplete()
+Nếu then().catchError() phản ánh một try-catch, thì whenComplete sẽ tương ứng với finally 
+
+Ví dụ:
+final server = connectToServer();
+server
+    .post(myUrl, fields: const {'name': 'Dash', 'profession': 'mascot'})
+    .then(handleResponse)
+    .catchError(handleError)
+    .whenComplete(server.close);
+    
++ Completing the Future returned by whenComplete()
+
+Trong đoạn mã dưới đây, thì then() hoàn thành với lỗi, vì vậy whenComplete() cũng hoàn thành với lỗi đó 
+
+Ví dụ:
+void main() {
+  funcThatThrows()
+      // Future completes with an error:
+      .then((_) => ...)
+      .catchError((e) {
+    handleError(e);
+    printErrorMessage();
+    return someObject; // Future completes with someObject
+  }).whenComplete(() => print('Done!')); // Future completes with someObject
+}
+
+Giá trị trae về với then() hoặc catchError trước đó chính là tham số của callback trong whenComplete()
+
++ Errors originating within whenComplete()
+Nếu whenComplete() đưa ra với một lỗi thì whenComplete() sẽ hoàn thành với lỗi đó
+
+ví dụ:
+void main() {
+  funcThatThrows()
+      // Future completes with a value:
+      .catchError(handleError)
+      // Future completes with an error:
+      .whenComplete(() => throw Exception('New error'))
+      // Error is handled:
+      .catchError(handleError);
+}
+
+
++ Potential problem: failing to register error handlers early
+
+Điều quan trọng là phải cài đặt trình xử lý lỗi trước khi Tương lai hoàn thành: điều này tránh các trường hợp trong đó Tương lai hoàn thành có lỗi, trình xử lý lỗi chưa được đính kèm và lỗi vô tình lan truyền. Hãy xem xét mã này: 
+
+void main() {
+  Future<Object> future = funcThatThrows();
+
+  // BAD: Too late to handle funcThatThrows() exception.
+  Future.delayed(const Duration(milliseconds: 500), () {
+    future.then(...).catchError(...);
+  });
+}
+
+Khắc phục lỗi này
+
+void main() {
+  Future.delayed(const Duration(milliseconds: 500), () {
+    funcThatThrows().then(...).catchError(...); // We get here.
+  });
+}
+
++ Potential problem: accidentally mixing synchronous and asynchronous errors
+
+Các hàm trả về Hợp đồng tương lai hầu như luôn phát ra lỗi của chúng trong tương lai. Vì chúng tôi không muốn trình gọi các hàm như vậy phải thực hiện nhiều kịch bản xử lý lỗi, chúng tôi muốn ngăn bất kỳ lỗi đồng bộ nào bị rò rỉ ra ngoài.
+
+Ví dụ:
+Future<int> parseAndRead(Map<String, dynamic> data) {
+  final filename = obtainFilename(data); // Could throw.
+  final file = File(filename);
+  return file.readAsString().then((contents) {
+    return parseFileData(contents); // Could throw.
+  });
+}
+
++ Có hai hàm đồng bộ là obtainFilename() và parseFileData() có thể phát sinh ra lỗi, hàm parseFileData() có thể được xử lý lỗi bằng catchError() do được viết trong hàm then()
++ Để xử lý lỗi của hàm obtainFilename() thì một trình xử lý lỗi riêng sẽ được sử dụng
+
+ví dụ:
+void main() {
+  parseAndRead(data).catchError((e) {
+    print('Inside catchError');
+    print(e);
+  });
+}
+
+- Solution: Using Future.sync() to wrap your code
+
+Một phần phổ biến đảm bảo không có lỗi đồng bô nào vô tình được ném ra từ một hàm là bọc thân hàm bên trong một lệnh gọi callback Future.sync()
+
+Nếu lệnh callback trả về một giá trị non-future thì Future.sync() sẽ hoàn thành với giá trị đó, nếu callback đưa ra một lỗi, thì Future hoàn thành với một lỗi
+
+Với mã được bao bọc trong Future.sync (), catchError () có thể xử lý tất cả các lỗi: 
+
+void main() {
+  parseAndRead(data).catchError((e) {
+    print('Inside catchError');
+    print(e);
+  });
+}
+
+Future.sync () không chỉ cho phép bạn xử lý các lỗi bạn biết có thể xảy ra mà còn ngăn các lỗi vô tình rò rỉ ra khỏi hàm của bạn 
+
+3. Stream
+- Stream là một chuỗi các sự kiện không đồng bộ như các event từ người dùng hay chuỗi dữ liệu được đọc từ file
+Stream như một lặp lại không đồng bộ, thay vì nhận được sự kiện tiếp theo khi cần yêu cầu, mà cho ta biết có một sự kiện khi nó sẵn sàng
+
+a. Receiving stream events
+Chúng có thể được tạo bằng nhiều cách khác nhau, nhưng chúng có thể được sử dụng theo cùng một cách giống nhau: asynchronous for loop (await for) lặp qua các sự kiện của một stream
+
+Ví dụ:
+Future<int> sumStream(Stream<int> stream) async {
+  var sum = 0;
+  await for (final value in stream) {
+    sum += value;
+  }
+  return sum;
+}
+
+Stream<int> countStream(int to) async* {
+  for (int i = 1; i <= to; i++) {
+    yield i;
+  }
+}
+
+Future<void> main() async {
+  var stream = countStream(10);
+  var sum = await sumStream(stream);
+  print(sum); // 55
+}
+
+b. Error events
+Stream được thực hiện khi không còn sự kiện nào trong nó, và mã nhận các sự kiện được thông báo và điều này giống như nó được thông báo rằng một sự kiện mới đến, vòng lặp for loop sẽ dừng lại khi stream được hoàn thành
+
+Một vài trường hợp lỗi xuất hiện trước khi stream được hoàn thành, ví dụ như lỗi mạng khi nhận các file từ server...
+
+Stream có thể cung cấp các sự kiện lỗi giống như nhận các sự kiện dữ liệu, hầu hết các stream sẽ dừng lại khi gặp lỗi đầu tiên, có stream cung cấp nhiều lỗi.
+
+Để bắt các lỗi ta sử dụng try-catch
+
+Ví dụ:
+Future<int> sumStream(Stream<int> stream) async {
+  var sum = 0;
+  try {
+    await for (final value in stream) {
+      sum += value;
+    }
+  } catch (e) {
+    return -1;
+  }
+  return sum;
+}
+
+Stream<int> countStream(int to) async* {
+  for (int i = 1; i <= to; i++) {
+    if (i == 4) {
+      throw Exception('Intentional exception');
+    } else {
+      yield i;
+    }
+  }
+}
+
+Future<void> main() async {
+  var stream = countStream(10);
+  var sum = await sumStream(stream);
+  print(sum); // -1
+}
+
+c. Working with streams
+Lớp stream chứa một số phương thức trợ giúp, ví dụ phương thức tìm số nguyên dương cuối cùng trong luồng bằng lastWhere() từ API luồng
+
+Future<int> lastPositive(Stream<int> stream) =>
+    stream.lastWhere((x) => x >= 0);
+
+d. Two kinds of streams
+Có hai loại streams
+
++ Single subscription streams
+Loại stream phổ biến nhất chứa một chuỗi các sự kiện là các phần của một tổng thể lớn hơn. Các sự kiện cần được phân phối theo đúng thứ tự và không bỏ sót bất kỳ sự kiện nào. Đây là loại stream bạn nhận được khi đọc tệp hoặc nhận yêu cầu web.
+
+Một stream như vậy chỉ có thể được nghe một lần. Nghe lại sau đó có thể đồng nghĩa với việc bỏ lỡ các sự kiện ban đầu và sau đó phần còn lại của stream không có ý nghĩa gì. Khi bạn bắt đầu nghe, dữ liệu sẽ được tìm nạp và cung cấp theo từng phần. 
+
++ Broadcast streams
+Loại stream khác dành cho các sự kiện riêng lẻ có thể được xử lý từng loại một. Ví dụ: loại stream này có thể được sử dụng cho các sự kiện chuột trong trình duyệt.
+
+e. Methods that process a stream
+Các methods được trình bày trong tài liệu docs
+
+f. Methods that modify a stream
+Là các methods trả về luồng mới dựa trên luồng ban đầu
+
++ The transform() function
+Hàm biến đổi () không chỉ để xử lý lỗi, nó là một map riêng cho các luồng
+
++ Reading and decoding a file
+
+g. The listen() method
+Là một phương thức low-level, tất cả các hàm stream khác được định nghĩa theo hàm listen()
+
+StreamSubscription<T> listen(void Function(T event)? onData,
+    {Function? onError, void Function()? onDone, bool? cancelOnError});
+    
+Để tạo một kiểu Stream sử dụng kế thừa Stream class và triển khai phương thức listen
+
+Phương thức listen() cho phép bạn bắt đầu nghe trên stream. Khi bạn lắng nghe, một đối tượng StreamSubscription sẽ được trả về đại diện cho các sự kiện tạo stream đang hoạt động
+
+stream subscription cho phép bạn tạm dừng đăng ký, tiếp tục sau khi tạm dừng và hủy hoàn toàn. Bạn có thể đặt lệnh gọi lại được gọi cho mỗi sự kiện dữ liệu hoặc sự kiện lỗi và khi luồng bị đóng. 
+
+4. Creating streams in dart
+Một stream là một chuỗi kết quả, Ta có thể listen() trên một luồng để nhận thông báo về kết quả (cả dữ liệu và lỗi) và stream sẽ ngừng hoạt động.
+
+Có thể tạm dừng khi đang listen hoặc dừng listen trước khi thực thi hoàn tất
+
+Các cách tạo luồng như sau:
++ Chuyển đổi các luồng hiện có
++ Tạo luồng từ đầu bằng cách sử dụng hàm async*
++ Tạo luồng bằng cách sử dụng StreamController
+
+a. Transforming an existing stream
+Trường hợp phổ biến để tạo stream là ta đã có một luồng và ta muốn tạo một stream mới dựa trên các sự kiện của luồng gốc 
+Cách tiếp cận chung nhất là tạo một luồng mới chờ các sự kiện trên luồng gốc và sau đó xuất ra các sự kiện mới
+
+Ví dụ:
+Stream<String> lines(Stream<String> source) async* {
+  // Stores any partial line from the previous chunk.
+  var partial = '';
+  // Wait until a new chunk is available, then process it.
+  await for (final chunk in source) {
+    var lines = chunk.split('\n');
+    lines[0] = partial + lines[0]; // Prepend partial line.
+    partial = lines.removeLast(); // Remove new partial line.
+    for (final line in lines) {
+      yield line; // Add lines to output stream.
+    }
+  }
+  // Add final partial line to output stream, if any.
+  if (partial.isNotEmpty) yield partial;
+}
+
+Đối với nhiều phép biến đổi phổ biến, bạn có thể sử dụng các phương thức chuyển đổi do stream cung cấp như map (), where (), expand () và take (). 
+
+Giả sử ta có một luồng counterStream đưa ra một bộ đếm tăng dần mỗi giây, cách triển khai như sau:
+
+var counterStream =
+    Stream<int>.periodic(const Duration(seconds: 1), (x) => x).take(15);
+    
+Để xem nhanh các sự kiện:
+counterStream.forEach(print); // Print an integer every second, 15 times.
+
+Để chuyển đổi các sự kiện trong stream, bạn có thể gọi một phương thức chuyển đổi chẳng hạn như map () trên stream trước khi nghe nó. Phương thức trả về một stream mới. 
+
+// Double the integer in each event.
+var doubleCounterStream = counterStream.map((int x) => x * 2);
+doubleCounterStream.forEach(print);
+
+Thay vì map (), bạn có thể sử dụng bất kỳ phương thức chuyển đổi nào khác, chẳng hạn như sau: 
+
+.where((int x) => x.isEven) // Retain only even integer events.
+.expand((var x) => [x, x]) // Duplicate each event.
+.take(5) // Stop after the first five events.
+
+Thông thường, một phương pháp chuyển đổi là tất cả những gì bạn cần. Tuy nhiên, nếu bạn cần kiểm soát nhiều hơn nữa đối với việc chuyển đổi, bạn có thể chỉ định StreamTransformer với phương thức Stream’s biến đổi (). Các thư viện nền tảng cung cấp máy biến dòng cho nhiều tác vụ phổ biến. Ví dụ: đoạn mã sau sử dụng máy biến áp utf8.decoder và LineSplitter được cung cấp bởi thư viện dart: convert. 
+
+Stream<List<int>> content = File('someFile.txt').openRead();
+List<String> lines = await content
+    .transform(utf8.decoder)
+    .transform(const LineSplitter())
+    .toList();
+    
+b. Creating a  stream from scratch
+Có một cách để tạo stream mới là sử dụng hàm trình tạo không đồng bộ async*, lúc này stream được tạo khi hàm được gọi, thân của hàm bắt đầu chạy khi stream được listened.
+Khi hàm trả về thì stream sẽ đóng lại
+Cho đến khi hàm trả về, nó có thể phát ra các sự kiện trên luồng bằng cách sử dụng câu lệnh yield hoặc yield*. 
+
+Ví dụ:
+Stream<int> timedCounter(Duration interval, [int? maxCount]) async* {
+  int i = 0;
+  while (true) {
+    await Future.delayed(interval);
+    yield i++;
+    if (i == maxCount) break;
+  }
+}
+
+Hàm này trả về một stream. Khi stream đó được lắng nghe, thân hàm bắt đầu chạy, Nó liên tục delay trong khoảng thời gian được yêu cầu và sau đó trả lại số tiếp theo 
+Nếu tham số count bị bỏ qua, không có điều kiện dừng trên vòng lặp, do đó luồng sẽ xuất ra các số ngày càng lớn hơn mãi mãi - hoặc cho đến khi người nghe hủy đăng ký của nó. 
+
+Khi trình nghe bị hủy bỏ, lúc này câu lệnh yield sẽ hoạt động như câu lệnh return, bất kì câu lệnh finally nào sẽ được thực thi và hàm sẽ thoát
+
+Khi hàm finally thoát, tương lai được trả về bởi phương thức cancel() sẽ hoàn tất. Nếu chức năng thoát với lỗi, thì tương lai sẽ hoàn thành với lỗi đó; nếu không, nó hoàn thành với null 
+
+Một cách hữu ích khác là chuyển đổi chuỗi Future thành một stream
+
+Stream<T> streamFromFutures<T>(Iterable<Future<T>> futures) async* {
+  for (final future in futures) {
+    var result = await future;
+    yield result;
+  }
+}
+
+Hàm này yêu cầu futures iterable cho một tương lai mới, chờ đợi cho đến khi future trả về kết quả và sau đó lặp lại
+Nếu một future đưa ra một lỗi thì stream sẽ hoàn thành với lỗi
+Rất hiếm khi có hàm async * tạo stream từ không có gì. Nó cần lấy dữ liệu của nó từ một nơi nào đó, và thường thì ở đâu đó là một stream khác. 
+Trong một số trường hợp, giống như chuỗi tương lai ở trên, dữ liệu đến từ các nguồn sự kiện không đồng bộ khác. 
+Tuy nhiên, trong nhiều trường hợp, hàm async * quá đơn giản để dễ dàng xử lý nhiều nguồn dữ liệu. Đó là nơi xuất hiện lớp StreamController.  
+
+c. Using a StreamController
+Nếu các sự kiện trong stream của bạn đến từ các phần khác nhau trong chương trình của bạn chứ không chỉ từ một stream hoặc future có thể được chuyển qua bởi một hàm không đồng bộ lúc này cần phải sử dụng StreamController
+StreamController cung cấp cho bạn một stream mới và một cách để thêm các sự kiện vào stream bất kỳ lúc nào và từ bất kì đâu, Luồng có tất cả logic cần thiết để xử lý listeners và pausing
+
+Ví dụ:
+// NOTE: This implementation is FLAWED!
+// It starts before it has subscribers, and it doesn't implement pause.
+Stream<int> timedCounter(Duration interval, [int? maxCount]) {
+  var controller = StreamController<int>();
+  int counter = 0;
+  void tick(Timer timer) {
+    counter++;
+    controller.add(counter); // Ask stream to send counter values as event.
+    if (maxCount != null && counter >= maxCount) {
+      timer.cancel();
+      controller.close(); // Ask stream to shut down and tell listeners.
+    }
+  }
+
+  Timer.periodic(interval, tick); // BAD: Starts before it has subscribers.
+  return controller.stream;
+}
+
+Sử dụng stream trả về bởi timedCounter()
+
+var counterStream = timedCounter(const Duration(seconds: 1), 15);
+counterStream.listen(print); // Print an integer every second, 15 times.
+
+Quá trình triển khai timedCounter() có hai vấn đề:
+Đã bắt đầu đưa ra các sự kiện trước khi có người đăng kí
+
+Ta có thể khắc phục hai sự cố bằng cách chỉ định lệnh callback như onListen và onPause khi tạo StreamControler
+
++ Waiting for a subscription
+Theo quy định các stream phải đợi đăng kí trước khi bắt đầu công việc. 
+Hàm async * tự động thực hiện điều này, nhưng khi sử dụng StreamController, bạn có toàn quyền kiểm soát và có thể thêm các sự kiện ngay cả khi không nên 
+Khi một stream không được đăng kí, StreamController sẽ lưu vào bộ đệm các sự kiện, điều này dẫn đến rò rỉ bộ nhớ nếu không có đăng kí
+
+Ta thay đổi thành mã sau:
+void listenAfterDelay() async {
+  var counterStream = timedCounter(const Duration(seconds: 1), 15);
+  await Future.delayed(const Duration(seconds: 5));
+
+  // After 5 seconds, add a listener.
+  await for (final n in counterStream) {
+    print(n); // Print an integer every second, 15 times.
+  }
+}
+
+Để được thông báo về các đăng ký, hãy chỉ định một đối số onListen khi bạn tạo StreamController. onListen callback được gọi khi stream nhận được sự đăng kí đầu tiên.
+Nếu bạn chỉ định một callback onCancel, nó sẽ được gọi khi bộ điều khiển mất sự đăng ký cuối cùng.
+
++ Honoring the pause state
+Tránh tạo sự kiện listen khi đã yêu cầu tạm dừng, một hàm async* tự động tạm dừng khi đăng kí strea bị tạm dừng
+Mặt khác một StreamController đệm các sự kiện trong thời gian tạm dừng. Nếu mã cung cấp các sự kiện không tuân theo thời gian tạm dừng, kích thước của bộ đệm có thể tăng lên vô thời hạn 
+Ngoài ra, nếu người nghe ngừng nghe ngay sau khi tạm dừng, thì công việc dành cho việc tạo vùng đệm sẽ bị lãng phí. 
+
+Ta thay đổi thành các mã sau:
+void listenWithPause() {
+  var counterStream = timedCounter(const Duration(seconds: 1), 15);
+  late StreamSubscription<int> subscription;
+
+  subscription = counterStream.listen((int counter) {
+    print(counter); // Print an integer every second.
+    if (counter == 5) {
+      // After 5 ticks, pause for five seconds, then resume.
+      subscription.pause(Future.delayed(const Duration(seconds: 5)));
+    }
+  });
+}
+
+Có thể thực hiện tạm dừng bằng lệnh gọi onListen, onPause, onResume và onCancel
+
+Ví dụ:
+
+Stream<int> timedCounter(Duration interval, [int? maxCount]) {
+  late StreamController<int> controller;
+  Timer? timer;
+  int counter = 0;
+
+  void tick(_) {
+    counter++;
+    controller.add(counter); // Ask stream to send counter values as event.
+    if (counter == maxCount) {
+      timer?.cancel();
+      controller.close(); // Ask stream to shut down and tell listeners.
+    }
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(interval, tick);
+  }
+
+  void stopTimer() {
+    timer?.cancel();
+    timer = null;
+  }
+
+  controller = StreamController<int>(
+      onListen: startTimer,
+      onPause: stopTimer,
+      onResume: startTimer,
+      onCancel: stopTimer);
+
+  return controller.stream;
+}
+
+Lúc này bộ đếm sẽ ngừng đếm khi bị tạm dừng và sẽ hoạt động tốt trở lại
+Bạn phải sử dụng tất cả các trình nghe — onListen, onCancel, onPause và onResume — để được thông báo về những thay đổi trong trạng thái tạm dừng. 
+Lý do là nếu trạng thái đăng ký và tạm dừng thay đổi cùng một lúc, thì chỉ lệnh callback onListen hoặc onCancel được gọi. 
+
+d. Final hints
+Khi tạo stream mà không sử dụng async* cần chú ý:
++ Hãy cẩn thận khi sử dụng bộ điều khiển đồng bộ — ví dụ: một bộ điều khiển được tạo bằng StreamController (sync: true).
+Khi bạn gửi một sự kiện trên một bộ điều khiển đồng bộ không bị tạm dừng (ví dụ: sử dụng các phương thức add (), addError () hoặc close () được xác định bởi EventSink), sự kiện sẽ được gửi ngay lập tức tới tất cả người nghe trên stream
+Trình nghe stream không bao giờ được gọi cho đến khi mã đã thêm trình nghe đã trả về đầy đủ và việc sử dụng bộ điều khiển đồng bộ không đúng thời điểm có thể phá vỡ yêu cầu này và khiến mã tốt bị lỗi. Tránh sử dụng bộ điều khiển đồng bộ.
+
++ Nếu bạn sử dụng StreamController, callback onListen được gọi trước khi cuộc gọi lắng nghe trả về StreamSubscription. Đừng để callback onListen phụ thuộc vào đăng ký đã có
+
+Ví dụ:
+subscription = stream.listen(handler);
+
++ Các lệnh callback onListen, onPause, onResume và onCancel được xác định bởi StreamController được gọi bởi streams khi trạng thái trình listener của stream thay đổi, nhưng không bao giờ trong khi kích hoạt một sự kiện hoặc trong khi gọi một trình xử lý thay đổi trạng thái khác. Trong những trường hợp đó, lệnh callback thay đổi trạng thái bị trì hoãn cho đến khi callback trước đó hoàn tất. 
+
++ Đừng cố tự triển khai stream interfaces. Có thể dễ dàng nhận được sự tương tác giữa các sự kiện, các callback và thêm và xóa listener một cách sai lầm. Luôn sử dụng stream hiện có, có thể từ StreamController, để triển khai lệnh nghe của một stream mới. 
+
++ Mặc dù có thể tạo các lớp kế thừa Stream với nhiều chức năng hơn bằng cách kế thừa lớp Luồng và triển khai phương thức listen và chức năng bổ sung ở trên cùng, nhưng điều này thường không được khuyến nghị vì nó giới thiệu một kiểu mới mà người dùng phải cân nhắc. Thay vào đó, bạn thường có thể tạo một lớp có stream (và nhiều hơn nữa) - thay vì một lớp là Stream (và nhiều hơn nữa). 
+
+e. StreamController
+Giống với các order (order => Cook => Devilery => Ready to eat)
+
+Stream:
+input -> sink
+process -> stream
+output -> stream
+
+ví dụ:
+import 'dart:async';
+
+enum orderTypes { chicken, meat, vegetables }
+
+class OrderForm {
+  final orderTypes type;
+  OrderForm(this.type);
+}
+
+void main(List<String> args) {
+  StreamController _streamCtrl = StreamController();
+
+  _streamCtrl.sink.add(OrderForm(orderTypes.meat));
+
+  final _process = StreamTransformer.fromHandlers(handleData: (type, sink) {
+    if (type == orderTypes.vegetables) {
+      sink.add('Ban an chay a');
+    } else {
+      sink.addError('Ban an man a ${type}');
+    }
+  });
+
+  void onData(data) => print('Oke, here your product.\n ${data}');
+  void onError(err) => print('Something went wrong!\n ${err}');
+
+  _streamCtrl.stream
+      .map((order) => order.type)
+      .transform(_process)
+      .listen(onData, onError: (err) => onError(err));
+}
+

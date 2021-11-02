@@ -1,0 +1,45 @@
++ Giá trị của biến name được định nghĩa kiểu String, kiểu dữ liệu này sẽ không bị thay đổi
+var name = 'Long'; //String
+
++ Kiểu dữ liệu không bị cố định ở một kiểu (Object or dynamic)
+Object name = 'Long'; //String
+
++ Định nghĩa kiểu rõ ràng cho một biến
+String name = 'Long'; //String
+
+
++ Cách khai báo các kiểu null
+var name; //null
+type? name; //null
+vd: int? name;
+
++ Khi không gán giá trị cho biến, cần phải khởi tạo giá trị của biến trước khi sử dụng nó
+int nonNull; //Check type of variable show error
+nonNull = 'long'; //String
+
++ Bien late
+- Khai báo một biến không thể là nullable được khởi tạo sau khi khai báo
+- Khởi tạo một biến lazy
+khi khai bao một biến global mà không gán giá trị thì ta phải khai báo bằng từ khóa late
+
+late String description; // Global variable
+void main() {
+	description = 'Feijoada!'; //set value for variable
+	print(description);
+}
+
++ Final and const variable
+Khi ta không muốn thay đổi giá trị của biến ta có thể sử dụng final và const thay vì sử dụng khai báo bằng var
+final thì không cần gán giá trị tức thời, const cần phải gán giá trị tức thời
+final có thể cập nhật được giá trị
+
+final String name = 'Long'; //Giá trị này không thể thay đổi
+const String name = 'Long'; //Giá trị này không thể thay đổi
+
+Khi khai báo trong một lớp ta phải dùng từ khóa static const
+
+
+
+
+
+

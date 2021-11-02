@@ -1,0 +1,121 @@
+Các kiểu dữ liệu
+Number, Strings, booleans, lists, sets, Maps, Runes, Symbol
+
++ Kiểu dữ liệu numbers
+- int kiểu số nguyên quy định giá trị từ -2^63 đến 2^63-1
+VD: int name = 1;
+- double kiểu số hữu tỉ
+VD: double name = 1.2345;
+Cả hai kiểu int và kiểu double đều có thể khai báo bằng từ khóa num có các toán tử và các method
+vd: num a = 1;
+a = 1.234;
+
++ Kiểu dữ liệu Strings
+kiểu String được quy định theo đơn vị mã UTF-16, có thể sử dụng dấu "" hoặc '' 
+VD: var str = "Xin chào các bạn tôi là Long";
+
++ Để viết một dấu ' trong cặp dấu '' ta sử dụng dấu \ hoặc sử dụng dấu "" bên ngoài
+VD: var str = 'Hello, i \'m Long';
+
++ Để nối biến có kiểu string vào một kiểu string ta sử dụng ${Variable}
+VD: var str = 'Long';
+print('Xin chào tôi là ${str}');
+
++ Để nối các chuỗi ta sử dụng như sau
+var s1 = 'String'
+	'concatenation'
+	"works even over line breaks.";
+var s2 = 'the operator' + 'works, as well';
+var s3 = '''
+you can create
+multi-line strings like this one
+''';
+
++ Kiểu dữ liệu boolean
+Ta có hai đại diện là true (đúng) và false (sai) thường sử dụng chúng làm giá trị của điều kiện
+
++ Kiểu dữ liệu Lists
+Thường được gọi là array
+var lists = [1, 2, 3];
+Các phần tử trong list không cần cùng kiểu dữ liệu
+
+Khi cần ràng buộc kiểu dữ liệu ta sử dụng 
+List<type> name = [];
+
+Khai báo giá trị mặc định cho list
+List<int> list = const [1, 2, 3];
+
+Các phần tử trong list được đánh số từ 0 đến n-1, ta có thể truy xuất các phần tử trong list
+print(lists[0]);
+
+Kiểm tra độ dài của một list
+print(list.length);
+
++ Kiểu dữ liệu set
+Là một tập hợp các giá trị không có thứ tự
+var names = {'Long', 'Hoàn', 'beo', 'Thanh'};
+Các giá trị trong list không cần phải có cùng kiểu dữ liệu
+
+Muốn ràng buộc kiểu dữ liệu ta sử dụng
+var name = <type>{};
+Hoặc Set<type> name = {};
+
+Các giá trị trong set không được đánh thứ tự
+Kiểm tra độ dài của một set
+print(name.length);
+
++ Kiểu dữ liệu maps
+Thường được gọi là object chứa các cặp gía trị key : value
+var gifts = {
+  // Key:    Value
+  'first': 'partridge',
+  'second': 'turtledoves',
+  'fifth': 'golden rings'
+};
+
+var nobleGases = {
+  2: 'helium',
+  10: 'neon',
+  18: 'argon',
+};
+
+Các cặp giá trị key:value không cần phải cùng kiểu dữ liệu
+
+Để ràng buộc kiểu dữ liệu ta sử dụng
+Map<type, type> name = {};
+
+Khai báo giá trị mặc định cho Map
+Map<String, String> gifts = const {
+      'first': 'paper',
+      'second': 'cotton',
+      'third': 'leather'
+    }
+
+Truy xuất giá trị trong maps
+gifts[key];
+
+Để kiểm tra độ dài trong map ta sử dụng
+print(gifts.length);
+
++ Kiểu dữ liệu runes
+Cung cấp mã unicode cho một chuỗi được theo mã UTF-16
+String name = 'Hello World';
+print(name.codeUnits);
+Sẽ in ra [72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100] Mỗi số trong list tương ứng với từng kí tự trong chuỗi
+
++ Kiểu dữ liệu Symbol
+Đại diện cho một toán tử hoặc số nhận dạng được khai báo trong chương trình dart
+
+Symbol name = new Symbol('Long');
+In ra Symbol('Long');
+Hoặc sử dụng 
+var name = #Long;
+
+
+
+
+
+
+
+
+
